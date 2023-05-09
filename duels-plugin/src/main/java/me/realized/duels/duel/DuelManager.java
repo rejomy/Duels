@@ -1,15 +1,7 @@
 package me.realized.duels.duel;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.api.event.match.MatchStartEvent;
@@ -54,6 +46,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -130,13 +123,27 @@ public class DuelManager implements Loadable {
                     final MatchImpl match = arena.getMatch();
 
                     // Only handle undecided matches (size > 1)
-                    if (match == null || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L) || arena.size() <= 1) {
+                    if (match == null
+                            || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L)
+                            || arena.size() <= 1) {
                         continue;
                     }
 
-                    for (final Player player : match.getAllPlayers()) {
+                    Player winner = match.getWinnerOfDamage(),
+                            looser = match.getLooserOfDamage();
+
+                    if(winner != looser) {
+                        looser.damage(1000);
+                        return;
+                    }
+
+                    Set<Player> members = match.getAllPlayers();
+
+                    for (final Player player : members) {
+
                         handleTie(player, arena, match, true);
                         lang.sendMessage(player, "DUEL.on-end.tie");
+
                     }
 
                     arena.endMatch(null, null, Reason.MAX_TIME_REACHED);
@@ -202,12 +209,29 @@ public class DuelManager implements Loadable {
             mcMMO.enableSkills(player);
         }
 
+        if (config.isTieCommandsEnabled() && !(!match.isFromQueue() && config.isTieCommandsQueueOnly())) {
+            try {
+                for (final String command : config.getTieCommands()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
+                            .replace("%player%", player.getName())
+                            .replace("%kit%", match.getKit().getName()).replace("%arena%", arena.getName())
+                            .replace("%bet_amount%", String.valueOf(match.getBet()))
+                    );
+                }
+            } catch (Exception ex) {
+                Log.warn(DuelManager.this, "Error while running match tie commands: " + ex.getMessage());
+            }
+        }
+
         final PlayerInfo info = playerManager.get(player);
         final List<ItemStack> items = match.getItems(player);
 
         if (alive) {
-            PlayerUtil.reset(player);
             playerManager.remove(player);
+
+            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {
+                PlayerUtil.reset(player);
+            }
 
             if (info != null) {
                 teleport.tryTeleport(player, info.getLocation());
@@ -514,7 +538,7 @@ public class DuelManager implements Loadable {
     private class DuelListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void on(final PlayerDeathEvent event) {
+        public void onDeath(final PlayerDeathEvent event) {
             final Player player = event.getEntity();
             final ArenaImpl arena = arenaManager.get(player);
 
@@ -537,14 +561,14 @@ public class DuelManager implements Loadable {
             if (top.getType() == InventoryType.CRAFTING) {
                 top.clear();
             }
-            
-            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {    
+
+            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {
                 event.getDrops().clear();
                 event.setKeepLevel(true);
                 event.setDroppedExp(0);
                 event.setKeepInventory(false);
             }
-            
+
             inventoryManager.create(player, true);
             arena.remove(player);
 
@@ -632,13 +656,19 @@ public class DuelManager implements Loadable {
         }
 
         @EventHandler(ignoreCancelled = true)
-        public void on(final PlayerDropItemEvent event) {
-            if (!config.isPreventItemDrop() || !arenaManager.isInMatch(event.getPlayer())) {
+        public void onDropItem(final PlayerDropItemEvent event) {
+            Player player = event.getPlayer();
+            if (!arenaManager.isInMatch(event.getPlayer())) {
                 return;
             }
 
-            event.setCancelled(true);
-            lang.sendMessage(event.getPlayer(), "DUEL.prevent.item-drop");
+            if(config.isPreventItemDrop()) {
+                event.setCancelled(true);
+                lang.sendMessage(event.getPlayer(), "DUEL.prevent.item-drop");
+            } else if(config.isClearItemsAfterMatch()) {
+                arenaManager.get(player).getMatch().droppedItems.add(event.getItemDrop());
+            }
+
         }
 
         @EventHandler(ignoreCancelled = true)
