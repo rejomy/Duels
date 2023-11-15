@@ -1,15 +1,7 @@
 package me.realized.duels.duel;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.api.event.match.MatchStartEvent;
@@ -134,9 +126,21 @@ public class DuelManager implements Loadable {
                         continue;
                     }
 
-                    for (final Player player : match.getAllPlayers()) {
+                    Player winner = match.getWinnerOfDamage(),
+                            looser = match.getLooserOfDamage();
+
+                    if(winner != looser) {
+                        looser.damage(1000);
+                        return;
+                    }
+
+                    Set<Player> members = match.getAllPlayers();
+
+                    for (final Player player : members) {
+
                         handleTie(player, arena, match, true);
                         lang.sendMessage(player, "DUEL.on-end.tie");
+
                     }
 
                     arena.endMatch(null, null, Reason.MAX_TIME_REACHED);
@@ -514,7 +518,7 @@ public class DuelManager implements Loadable {
     private class DuelListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void on(final PlayerDeathEvent event) {
+        public void onDeath(final PlayerDeathEvent event) {
             final Player player = event.getEntity();
             final ArenaImpl arena = arenaManager.get(player);
 
