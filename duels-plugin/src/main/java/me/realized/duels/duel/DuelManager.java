@@ -46,6 +46,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -122,7 +123,9 @@ public class DuelManager implements Loadable {
                     final MatchImpl match = arena.getMatch();
 
                     // Only handle undecided matches (size > 1)
-                    if (match == null || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L) || arena.size() <= 1) {
+                    if (match == null
+                            || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L)
+                            || arena.size() <= 1) {
                         continue;
                     }
 
@@ -204,6 +207,20 @@ public class DuelManager implements Loadable {
 
         if (mcMMO != null) {
             mcMMO.enableSkills(player);
+        }
+
+        if (config.isTieCommandsEnabled() && !(!match.isFromQueue() && config.isTieCommandsQueueOnly())) {
+            try {
+                for (final String command : config.getTieCommands()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
+                            .replace("%player%", player.getName())
+                            .replace("%kit%", match.getKit().getName()).replace("%arena%", arena.getName())
+                            .replace("%bet_amount%", String.valueOf(match.getBet()))
+                    );
+                }
+            } catch (Exception ex) {
+                Log.warn(DuelManager.this, "Error while running match tie commands: " + ex.getMessage());
+            }
         }
 
         final PlayerInfo info = playerManager.get(player);
@@ -636,13 +653,19 @@ public class DuelManager implements Loadable {
         }
 
         @EventHandler(ignoreCancelled = true)
-        public void on(final PlayerDropItemEvent event) {
-            if (!config.isPreventItemDrop() || !arenaManager.isInMatch(event.getPlayer())) {
+        public void onDropItem(final PlayerDropItemEvent event) {
+            Player player = event.getPlayer();
+            if (!arenaManager.isInMatch(event.getPlayer())) {
                 return;
             }
 
-            event.setCancelled(true);
-            lang.sendMessage(event.getPlayer(), "DUEL.prevent.item-drop");
+            if(config.isPreventItemDrop()) {
+                event.setCancelled(true);
+                lang.sendMessage(event.getPlayer(), "DUEL.prevent.item-drop");
+            } else if(config.isClearItemsAfterMatch()) {
+                arenaManager.get(player).getMatch().droppedItems.add(event.getItemDrop());
+            }
+
         }
 
         @EventHandler(ignoreCancelled = true)

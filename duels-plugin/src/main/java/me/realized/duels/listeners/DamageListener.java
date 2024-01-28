@@ -1,8 +1,10 @@
 package me.realized.duels.listeners;
 
 import me.realized.duels.DuelsPlugin;
+import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
+import me.realized.duels.kit.KitImpl;
 import me.realized.duels.util.EventUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,6 +46,16 @@ public class DamageListener implements Listener {
         // Only activate when winner is undeclared
         if (arena == null || !arenaManager.isInMatch(damager) || arena.isEndGame()) {
             return;
+        }
+
+        KitImpl.Characteristic characteristic = arena.getMatch().getKit().getCharacteristics().stream().filter(
+                c -> c == KitImpl.Characteristic.BOXING).findFirst().orElse(null);
+
+        if(characteristic != null) {
+            if(arena.getMatch().getHits(damager) >= 100) {
+                arena.endMatch(damager.getUniqueId(), player.getUniqueId(), MatchEndEvent.Reason.OPPONENT_DEFEAT);
+            }
+            event.setDamage(0);
         }
 
         arena.getMatch().addDamageToPlayer(damager, event.getFinalDamage());

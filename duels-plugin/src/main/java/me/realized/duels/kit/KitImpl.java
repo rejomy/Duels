@@ -39,8 +39,8 @@ public class KitImpl extends BaseButton implements Kit {
     @Setter(value = AccessLevel.PACKAGE)
     private boolean removed;
 
-    public KitImpl(final DuelsPlugin plugin, final String name, final ItemStack displayed, final boolean usePermission, final boolean arenaSpecific,
-        final Set<Characteristic> characteristics) {
+    public KitImpl(final DuelsPlugin plugin, final String name, final ItemStack displayed, final boolean usePermission,
+                   final boolean arenaSpecific, final Set<Characteristic> characteristics) {
         super(plugin, displayed != null ? displayed : ItemBuilder
             .of(Material.DIAMOND_SWORD)
             .name("&7&l" + name)
@@ -152,6 +152,7 @@ public class KitImpl extends BaseButton implements Kit {
         SOUP,
         SUMO,
         UHC,
-        COMBO;
+        COMBO,
+        BOXING;
     }
 }

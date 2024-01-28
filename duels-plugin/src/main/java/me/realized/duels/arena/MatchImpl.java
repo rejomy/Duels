@@ -7,6 +7,7 @@ import lombok.Getter;
 import me.realized.duels.api.match.Match;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.queue.Queue;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,9 @@ public class MatchImpl implements Match {
         // Player is dead value
         public boolean isDead;
         // How much damage to your opponent.
-        public double damageCount = 0;
+        public double damageCount;
+
+        public int hits;
 
     }
 
@@ -40,6 +43,9 @@ public class MatchImpl implements Match {
 
     @Getter
     private boolean finished;
+
+    @Getter
+    public List<Item> droppedItems = new ArrayList<>();
 
     // Default value for players is false, which is set to true if player is killed in the match.
     private final Map<Player, PlayerStatus> players = new HashMap<>();
@@ -62,7 +68,13 @@ public class MatchImpl implements Match {
     }
 
     public void addDamageToPlayer(Player player, double damage) {
-        players.get(player).damageCount += damage;
+        PlayerStatus status = players.get(player);
+        status.damageCount += damage;
+        status.hits++;
+    }
+
+    public int getHits(Player player) {
+        return players.get(player).hits;
     }
 
     public Player getWinnerOfDamage() {
