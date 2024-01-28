@@ -78,6 +78,11 @@ public class KitOptionsListener implements Listener {
             return;
         }
 
+        if(arena.getMatch().getDurationInMillis() < 5000) {
+            event.setCancelled(true);
+            return;
+        }
+
         final Block block = event.getFrom().getBlock();
 
         if (!(block.getType().name().contains("WATER") || block.getType().name().contains("LAVA"))) {

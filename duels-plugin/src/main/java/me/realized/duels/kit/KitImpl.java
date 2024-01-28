@@ -148,7 +148,6 @@ public class KitImpl extends BaseButton implements Kit {
     }
 
     public enum Characteristic {
-
         SOUP,
         SUMO,
         UHC,

@@ -53,9 +53,11 @@ public class DamageListener implements Listener {
 
         if(characteristic != null) {
             if(arena.getMatch().getHits(damager) >= 100) {
-                arena.endMatch(damager.getUniqueId(), player.getUniqueId(), MatchEndEvent.Reason.OPPONENT_DEFEAT);
+                player.damage(99999);
+                return;
             }
             event.setDamage(0);
+            return;
         }
 
         arena.getMatch().addDamageToPlayer(damager, event.getFinalDamage());
