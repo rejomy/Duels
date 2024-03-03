@@ -12,6 +12,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Overrides damage cancellation by other plugins for players in a duel.
@@ -52,12 +56,16 @@ public class DamageListener implements Listener {
                 c -> c == KitImpl.Characteristic.BOXING).findFirst().orElse(null);
 
         if(characteristic != null) {
-            if(arena.getMatch().getHits(damager) >= 100) {
-                player.damage(99999);
+            if(arena.getMatch().getHits(damager) >= 99) {
+                PlayerDeathEvent customEvent = new PlayerDeathEvent(player,
+                        new ArrayList<>(Arrays.asList(player.getInventory().getContents())), 0,
+                        "Suck " + damager.getDisplayName() + " on boxing fight!");
+                Bukkit.getPluginManager().callEvent(customEvent);
+                event.setDamage(0);
                 return;
             }
+
             event.setDamage(0);
-            return;
         }
 
         arena.getMatch().addDamageToPlayer(damager, event.getFinalDamage());

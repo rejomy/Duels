@@ -42,7 +42,9 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -231,8 +233,12 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
     private class ArenaListener implements Listener {
 
-        @EventHandler(ignoreCancelled = true)
+        @EventHandler
         public void on(final PlayerInteractEvent event) {
+            if(event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+                return;
+            }
+
             if (!config.isPreventInteract()) {
                 return;
             }
