@@ -44,6 +44,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -236,13 +237,34 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
                 return;
             }
 
-            final ArenaImpl arena = get(event.getPlayer());
+            Player player = event.getPlayer();
+
+            final ArenaImpl arena = get(player);
 
             if (arena == null || !arena.isCounting()) {
                 return;
             }
 
             event.setCancelled(true);
+            player.updateInventory();
+        }
+
+        @EventHandler(ignoreCancelled = true)
+        public void on(final EntityShootBowEvent event) {
+            if (!(event.getEntity() instanceof Player) || !config.isPreventInteract()) {
+                return;
+            }
+
+            Player player = (Player) event.getEntity();
+
+            final ArenaImpl arena = get(player);
+
+            if (arena == null || !arena.isCounting()) {
+                return;
+            }
+
+            event.setCancelled(true);
+            player.updateInventory();
         }
 
         @EventHandler(ignoreCancelled = true)
@@ -283,12 +305,16 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
         @EventHandler(ignoreCancelled = true)
         public void on(final PlayerMoveEvent event) {
+            final Location to = event.getTo();
+            if(to.getBlockY() < config.getMinY()) {
+                event.getPlayer().damage(99999);
+            }
+
             if (!config.isPreventMovement()) {
                 return;
             }
 
             final Location from = event.getFrom();
-            final Location to = event.getTo();
 
             if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) {
                 return;

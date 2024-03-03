@@ -98,6 +98,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean startCommandsQueueOnly;
     @Getter
+    private int minY;
+    @Getter
     private List<String> startCommands;
     @Getter
     private boolean endCommandsEnabled;
@@ -308,6 +310,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         expiration = Math.max(configuration.getInt("request.expiration", 30), 0);
 
         maxDuration = configuration.getInt("duel.match.max-duration", -1);
+        minY = configuration.getInt("duel.match.min-y", -100);
         startCommandsEnabled = configuration.getBoolean("duel.match.start-commands.enabled", false);
         startCommandsQueueOnly = configuration.getBoolean("duel.match.start-commands.queue-matches-only", false);
         startCommands = configuration.getStringList("duel.match.start-commands.commands");
@@ -332,7 +335,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         arenaOnlyEndMessage = configuration.getBoolean("duel.arena-only-end-message", false);
         displayInventories = configuration.getBoolean("duel.display-inventories", true);
         preventItemDrop = configuration.getBoolean("duel.prevent-item-drop", false);
-        preventItemDrop = configuration.getBoolean("duel.clear-items-after-duel", false);
+        clearItemsAfterMatch = configuration.getBoolean("duel.clear-items-after-duel", false);
         preventItemPickup = configuration.getBoolean("duel.prevent-item-pickup", true);
         limitTeleportEnabled = configuration.getBoolean("duel.limit-teleportation.enabled", true);
         distanceAllowed = configuration.getDouble("duel.limit-teleportation.distance-allowed", 5.0);
