@@ -233,29 +233,11 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
         @EventHandler(ignoreCancelled = true)
         public void on(final PlayerInteractEvent event) {
-            if (!event.hasBlock() || !config.isPreventInteract()) {
+            if (!config.isPreventInteract()) {
                 return;
             }
 
             Player player = event.getPlayer();
-
-            final ArenaImpl arena = get(player);
-
-            if (arena == null || !arena.isCounting()) {
-                return;
-            }
-
-            event.setCancelled(true);
-            player.updateInventory();
-        }
-
-        @EventHandler(ignoreCancelled = true)
-        public void on(final EntityShootBowEvent event) {
-            if (!(event.getEntity() instanceof Player) || !config.isPreventInteract()) {
-                return;
-            }
-
-            Player player = (Player) event.getEntity();
 
             final ArenaImpl arena = get(player);
 
