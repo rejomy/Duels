@@ -5,7 +5,9 @@ import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.util.EventUtil;
+import me.realized.duels.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,15 +59,14 @@ public class DamageListener implements Listener {
 
         if(characteristic != null) {
             if(arena.getMatch().getHits(damager) >= 99) {
+                player.getInventory().clear();
                 PlayerDeathEvent customEvent = new PlayerDeathEvent(player,
-                        new ArrayList<>(Arrays.asList(player.getInventory().getContents())), 0,
+                        new ArrayList<>(), 0,
                         "Suck " + damager.getDisplayName() + " on boxing fight!");
+                PlayerUtil.reset(player);
                 Bukkit.getPluginManager().callEvent(customEvent);
-                event.setDamage(0);
                 return;
             }
-
-            event.setDamage(0);
         }
 
         arena.getMatch().addDamageToPlayer(damager, event.getFinalDamage());

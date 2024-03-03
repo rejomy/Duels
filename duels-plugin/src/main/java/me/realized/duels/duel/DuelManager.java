@@ -573,6 +573,8 @@ public class DuelManager implements Loadable {
             inventoryManager.create(player, true);
             arena.remove(player);
 
+            boolean isDead = player.isDead();
+
             // Call end task only on the first death
             if (arena.size() <= 0) {
                 return;
@@ -608,6 +610,12 @@ public class DuelManager implements Loadable {
                 handleStats(match, userDataManager.get(winner), userDataManager.get(player), matchData);
                 plugin.doSyncAfter(() -> handleInventories(match), 1L);
                 plugin.doSyncAfter(() -> {
+                    if(!isDead) {
+                        PlayerInfo info = playerManager.get(player);
+                        teleport.tryTeleport(player, info.getLocation());
+                        info.restore(player);
+                    }
+
                     handleWin(winner, player, arena, match);
 
                     if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
