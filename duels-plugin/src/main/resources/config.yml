@@ -393,7 +393,6 @@ queue:
   # List of commands to block while in a queue.
   blacklisted-commands: []
 
-
 rating:
   # If set to 'true', player's rating will change after match based on their opponent.
   # default: true

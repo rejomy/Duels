@@ -50,6 +50,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -235,11 +236,7 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
         @EventHandler
         public void on(final PlayerInteractEvent event) {
-            if(event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
-                return;
-            }
-
-            if (!config.isPreventInteract()) {
+            if(event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled() || !config.isPreventInteract()) {
                 return;
             }
 
@@ -284,7 +281,7 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
             final ArenaImpl arena = get((Player) shooter);
 
-            if (arena == null || !arena.isCounting()) {
+            if (arena == null || !arena.isCounting() || event.getEntity().getClass().getName().contains("Potion")) {
                 return;
             }
 
