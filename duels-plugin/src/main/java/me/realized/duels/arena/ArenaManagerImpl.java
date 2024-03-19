@@ -291,9 +291,6 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
         @EventHandler(ignoreCancelled = true)
         public void on(final PlayerMoveEvent event) {
             final Location to = event.getTo();
-            if(to.getBlockY() < config.getMinY()) {
-                event.getPlayer().damage(99999);
-            }
 
             if (!config.isPreventMovement()) {
                 return;
@@ -307,7 +304,15 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
             final ArenaImpl arena = get(event.getPlayer());
 
-            if (arena == null || !arena.isCounting()) {
+            if (arena == null) {
+                return;
+            }
+
+            if(to.getBlockY() < config.getMinY()) {
+                event.getPlayer().damage(99999);
+            }
+
+            if(!arena.isCounting()) {
                 return;
             }
 
