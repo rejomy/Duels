@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -88,6 +90,46 @@ public class KitOptionsListener implements Listener {
     }
 
     @EventHandler
+    public void on(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final ArenaImpl arena = arenaManager.get(player);
+
+        if (arena == null) {
+            return;
+        }
+
+        if(isEnabled(arena, Characteristic.PLACE)) {
+            if(event.getBlockReplacedState().getType() == Material.AIR) {
+                arena.getMatch().placedBlocks.add(event.getBlock());
+                return;
+            }
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void on(BlockBreakEvent event) {
+        final Player player = event.getPlayer();
+        final ArenaImpl arena = arenaManager.get(player);
+
+        if (arena == null) {
+            return;
+        }
+
+        if(arena.getMatch() != null && isEnabled(arena, Characteristic.BREAK)) {
+            if(arena.getMatch().brokenBlocks.containsKey(event.getBlock().getLocation())) {
+                return;
+            }
+
+            arena.getMatch().brokenBlocks.put(event.getBlock().getLocation(), event.getBlock().getBlockData().clone());
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void on(final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         final ArenaImpl arena = arenaManager.get(player);
@@ -98,8 +140,8 @@ public class KitOptionsListener implements Listener {
 
         final Location to = event.getTo(), from = event.getFrom();
 
-        if (from.getBlockX() !=
-                to.getBlockX() && from.getBlockY() != to.getBlockY() && from.getBlockZ() != to.getBlockZ()
+        if ((from.getBlockX() !=
+                to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ())
              && arena.getMatch().getDurationInMillis() < 5000) {
             from.setPitch(player.getLocation().getPitch());
             from.setYaw(player.getLocation().getYaw());

@@ -27,6 +27,9 @@ import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.inventory.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -165,6 +168,14 @@ public class ArenaImpl extends BaseButton implements Arena {
 
         final Queue source = match.getSource();
         match.setFinished();
+
+        for(Block block : match.placedBlocks) {
+            block.setType(Material.AIR);
+        }
+
+        for(Map.Entry<Location, BlockData> map : match.brokenBlocks.entrySet()) {
+            map.getKey().getBlock().setBlockData(map.getValue());
+        }
 
         if(config.isClearItemsAfterMatch()) {
             match.droppedItems.forEach(Entity::remove);

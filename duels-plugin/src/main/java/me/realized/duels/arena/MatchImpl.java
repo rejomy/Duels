@@ -7,6 +7,10 @@ import lombok.Getter;
 import me.realized.duels.api.match.Match;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.queue.Queue;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -44,8 +48,9 @@ public class MatchImpl implements Match {
     @Getter
     private boolean finished;
 
-    @Getter
     public List<Item> droppedItems = new ArrayList<>();
+    public List<Block> placedBlocks = new ArrayList<>();
+    public HashMap<Location, BlockData> brokenBlocks = new HashMap<>();
 
     // Default value for players is false, which is set to true if player is killed in the match.
     private final Map<Player, PlayerStatus> players = new HashMap<>();
