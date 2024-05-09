@@ -113,11 +113,15 @@ public class KitOptionsListener implements Listener {
         final Player player = event.getPlayer();
         final ArenaImpl arena = arenaManager.get(player);
 
-        if (arena == null) {
+        if (arena == null || arena.getMatch() == null) {
             return;
         }
 
-        if(arena.getMatch() != null && isEnabled(arena, Characteristic.BREAK)) {
+        if(arena.getMatch().placedBlocks.contains(event.getBlock())) {
+            return;
+        }
+
+        if(isEnabled(arena, Characteristic.BREAK)) {
             if(arena.getMatch().brokenBlocks.containsKey(event.getBlock().getLocation())) {
                 return;
             }

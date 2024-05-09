@@ -49,7 +49,6 @@ public class OptionsGui extends SinglePageGui<DuelsPlugin> {
         SUMO(Material.SLIME_BALL, Characteristic.SUMO, "When enabled, players will ", "lose health only when", "interacting with water or lava."),
         UHC(Material.GOLDEN_APPLE, Characteristic.UHC, "When enabled, player's health", "will not naturally regenerate."),
         COMBO(Material.IRON_SWORD, Characteristic.COMBO, "When enabled, players will", "have no delay between hits."),
-        BED_FIGHT(Material.STONE, Characteristic.BEDFIGHT, "When enabled, players need", "destroy opponent bet for win."),
         HUNGER(Material.COOKED_BEEF, Characteristic.HUNGER, "When enabled, players will", "not hungry."),
         PLACE(Material.STONE, Characteristic.PLACE, "When enabled, players can", "be placed blocks in arena."),
         BREAK(Material.STONE, Characteristic.BREAK, "When enabled, players can", "be break blocks in arena."),

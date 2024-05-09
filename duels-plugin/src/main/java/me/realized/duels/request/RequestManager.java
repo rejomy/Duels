@@ -132,7 +132,6 @@ public class RequestManager implements Loadable, Listener {
 
     @EventHandler
     public void on(final PlayerQuitEvent event) {
-        event.getPlayer().setHealth(0);
         requests.remove(event.getPlayer().getUniqueId());
     }
 }
