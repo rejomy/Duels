@@ -680,6 +680,8 @@ public class DuelManager implements Loadable {
             if (!arenaManager.isInMatch(player)) {
                 return;
             }
+
+            player.setHealth(0);
         }
 
         @EventHandler(ignoreCancelled = true)
