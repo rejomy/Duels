@@ -75,7 +75,7 @@ public class AcceptCommand extends BaseCommand {
 
         final Player target = Bukkit.getPlayerExact(args[1]);
 
-        if (target == null || !player.canSee(target)) {
+        if (target == null /*|| !player.canSee(target)*/) {
             lang.sendMessage(sender, "ERROR.player.not-found", "name", args[1]);
             return;
         }
