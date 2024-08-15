@@ -20,8 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -90,6 +89,33 @@ public class KitOptionsListener implements Listener {
     }
 
     @EventHandler
+    public void onInteractLiquid(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !event.hasBlock()) {
+            return;
+        }
+
+        ArenaImpl arena = arenaManager.get(event.getPlayer());
+
+        if (arena == null || !isEnabled(arena, Characteristic.PLACE)) {
+            return;
+        }
+
+        ItemStack item = event.getItem();
+
+        if (item == null) {
+            return;
+        }
+
+        String itemType = item.getType().name().toLowerCase();
+
+        if (!itemType.contains("water") && !itemType.contains("lava")) {
+            return;
+        }
+
+        arena.getMatch().liquids.add(event.getClickedBlock());
+    }
+
+    @EventHandler
     public void on(BlockPlaceEvent event) {
         final Player player = event.getPlayer();
         final ArenaImpl arena = arenaManager.get(player);
@@ -99,7 +125,8 @@ public class KitOptionsListener implements Listener {
         }
 
         if(isEnabled(arena, Characteristic.PLACE)) {
-            if(event.getBlockReplacedState().getType() == Material.AIR) {
+            Material blockType = event.getBlockReplacedState().getType();
+            if(blockType == Material.AIR || blockType == Material.WATER || blockType == Material.LAVA) {
                 arena.getMatch().placedBlocks.add(event.getBlock());
                 return;
             }

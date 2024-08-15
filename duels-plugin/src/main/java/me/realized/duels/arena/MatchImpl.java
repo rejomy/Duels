@@ -50,6 +50,7 @@ public class MatchImpl implements Match {
 
     public List<Item> droppedItems = new ArrayList<>();
     public List<Block> placedBlocks = new ArrayList<>();
+    public List<Block> liquids = new ArrayList<>();
     public HashMap<Location, BlockData> brokenBlocks = new HashMap<>();
 
     // Default value for players is false, which is set to true if player is killed in the match.
