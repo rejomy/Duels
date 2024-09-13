@@ -14,6 +14,9 @@ processResources {
 }
 
 dependencies {
+    compileOnly('net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT') {
+        exclude group: '*', module: '*'
+    }
     compileOnly 'org.jetbrains:annotations-java5:22.0.0'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'

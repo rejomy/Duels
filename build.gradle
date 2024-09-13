@@ -27,6 +27,11 @@ subprojects {
         mavenCentral()
 
         maven {
+            name = 'citizens-repo'
+            url = 'https://maven.citizensnpcs.co/repo'
+        }
+
+        maven {
             name 'spigot-repo'
             url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
         }
