@@ -105,7 +105,7 @@ public class PlaceholderHook extends PluginHook<DuelsPlugin> {
 
                     int hitsDiff = playerHits - opponentHits;
 
-                    String color = hitsDiff == 0? "&7" : hitsDiff > 0? "&a" : "&c";
+                    String color = hitsDiff == 0? "&7" : hitsDiff > 0? "&a+" : "&c";
 
                     return StringUtil.color(color) + hitsDiff;
                 }
