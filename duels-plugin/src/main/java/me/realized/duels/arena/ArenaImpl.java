@@ -49,7 +49,7 @@ public class ArenaImpl extends BaseButton implements Arena {
     private final Map<Integer, Location> positions = new HashMap<>();
     @Getter
     private MatchImpl match;
-    @Getter(value = AccessLevel.PACKAGE)
+    @Getter
     @Setter(value = AccessLevel.PACKAGE)
     private Countdown countdown;
     @Getter

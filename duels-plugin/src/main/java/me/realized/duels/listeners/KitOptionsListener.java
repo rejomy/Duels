@@ -173,7 +173,7 @@ public class KitOptionsListener implements Listener {
 
         if ((from.getBlockX() !=
                 to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ())
-             && arena.getMatch().getDurationInMillis() < 5000) {
+             && arena.getCountdown() != null) {
             from.setPitch(player.getLocation().getPitch());
             from.setYaw(player.getLocation().getYaw());
             event.setTo(from);
