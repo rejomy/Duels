@@ -173,6 +173,9 @@ duel:
     # default: -1
     max-duration: -1
 
+    # If player y value smaller than this value, player has been killed.
+    min-y: -100
+
     # If set to 'true', start commands will run only for matches started through the queue system.
     # default: false
     queue-matches-only: false
@@ -181,9 +184,6 @@ duel:
       # If set to 'true', the commands listed below will run FOR EACH player at the start of a match.
       # default: false
       enabled: false
-
-      # If player y value smaller than this value, player has been killed.
-      min-y: -100
 
       # Available placeholders:
       # %player% - Name of the player entering the match
